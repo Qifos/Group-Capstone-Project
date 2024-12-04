@@ -7,7 +7,6 @@
  * 2 - 5026231164 - Bagus Subekti
  */
 
-
 import java.awt.*;
 /**
  * The Cell class models each individual cell of the game board.

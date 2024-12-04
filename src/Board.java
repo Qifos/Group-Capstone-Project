@@ -7,7 +7,6 @@
  * 2 - 5026231164 - Bagus Subekti
  */
 
-
 import java.awt.*;
 /**
  * The Board class models the ROWS-by-COLS game board.

@@ -7,7 +7,6 @@
  * 2 - 5026231164 - Bagus Subekti
  */
 
-
 import java.awt.Image;
 import java.net.URL;
 import javax.swing.ImageIcon;
