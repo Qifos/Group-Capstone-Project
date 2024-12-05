@@ -8,6 +8,7 @@
  */
 
 import java.awt.*;
+
 /**
  * The Board class models the ROWS-by-COLS game board.
  */
@@ -62,32 +63,13 @@ public class Board {
         // Update game board
         cells[selectedRow][selectedCol].content = player;
 
-        // Compute and return the new game state
-        if (cells[selectedRow][0].content == player  // 3-in-the-row
-                && cells[selectedRow][1].content == player
-                && cells[selectedRow][2].content == player
-                || cells[0][selectedCol].content == player // 3-in-the-column
-                && cells[1][selectedCol].content == player
-                && cells[2][selectedCol].content == player
-                || selectedRow == selectedCol     // 3-in-the-diagonal
-                && cells[0][0].content == player
-                && cells[1][1].content == player
-                && cells[2][2].content == player
-                || selectedRow + selectedCol == 2 // 3-in-the-opposite-diagonal
-                && cells[0][2].content == player
-                && cells[1][1].content == player
-                && cells[2][0].content == player) {
+        // Check if the player has won or if it's a draw
+        if (hasWon(player)) {
             return (player == Seed.CROSS) ? State.CROSS_WON : State.NOUGHT_WON;
-        } else {
-            // Nobody win. Check for DRAW (all cells occupied) or PLAYING.
-            for (int row = 0; row < ROWS; ++row) {
-                for (int col = 0; col < COLS; ++col) {
-                    if (cells[row][col].content == Seed.NO_SEED) {
-                        return State.PLAYING; // still have empty cells
-                    }
-                }
-            }
+        } else if (isDraw()) {
             return State.DRAW; // no empty cell, it's a draw
+        } else {
+            return State.PLAYING; // Game is still ongoing
         }
     }
 
@@ -113,4 +95,41 @@ public class Board {
             }
         }
     }
+
+    /**
+     * Check if the given player has won the game.
+     * @param player The player to check (CROSS or NOUGHT).
+     * @return true if the player has won, otherwise false.
+     */
+    public boolean hasWon(Seed player) {
+        // Check rows and columns
+        for (int i = 0; i < 3; i++) {
+            if (cells[i][0].content == player && cells[i][1].content == player && cells[i][2].content == player)
+                return true;
+            if (cells[0][i].content == player && cells[1][i].content == player && cells[2][i].content == player)
+                return true;
+        }
+        // Check diagonals
+        if (cells[0][0].content == player && cells[1][1].content == player && cells[2][2].content == player)
+            return true;
+        if (cells[0][2].content == player && cells[1][1].content == player && cells[2][0].content == player)
+            return true;
+
+        return false;
+    }
+
+    /**
+     * Check if the game is a draw (no empty cells and no winner).
+     * @return true if the game is a draw, otherwise false.
+     */
+    public boolean isDraw() {
+        // Check for any empty cells
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (cells[row][col].content == Seed.NO_SEED) return false; // Empty cell means not a draw
+            }
+        }
+        return true; // No empty cells, so it's a draw
+    }
 }
+

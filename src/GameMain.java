@@ -45,17 +45,26 @@ public class GameMain extends JPanel {
                 int col = mouseX / Cell.SIZE;
 
                 if (currentState == State.PLAYING) {
-                    SoundEffect.EAT_FOOD.play();
-                    if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
-                            && board.cells[row][col].content == Seed.NO_SEED) {
-                        // Update cells[][] and return the new game state after the move
-                        currentState = board.stepGame(currentPlayer, row, col);
-                        // Switch player
-                        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                    if (currentPlayer == Seed.CROSS) { // Human player's turn
+                        if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
+                                && board.cells[row][col].content == Seed.NO_SEED) {
+                            SoundEffect.EAT_FOOD.play(); // Play sound when human makes a move
+                            currentState = board.stepGame(currentPlayer, row, col);
+                            currentPlayer = Seed.NOUGHT; // Switch to AI
+                            repaint();
+                        }
                     }
-                } else {        // game over
-                    SoundEffect.DIE.play();
-                    newGame();  // restart the game
+
+                    if (currentState == State.PLAYING && currentPlayer == Seed.NOUGHT) { // AI's turn
+                        int[] aiMove = getAIMove(); // Get AI's best move
+                        SoundEffect.EAT_FOOD.play(); // Play sound when AI makes a move
+                        currentState = board.stepGame(currentPlayer, aiMove[0], aiMove[1]);
+                        currentPlayer = Seed.CROSS; // Switch back to human
+                        repaint();
+                    }
+                } else { // game over
+                    SoundEffect.DIE.play(); // Play sound when game ends
+                    newGame(); // restart the game
                 }
                 // Refresh the drawing canvas
                 repaint();  // Callback paintComponent().
@@ -96,6 +105,52 @@ public class GameMain extends JPanel {
         }
         currentPlayer = Seed.CROSS;    // cross plays first
         currentState = State.PLAYING;  // ready to play
+    }
+
+    /** Determine the best move for the AI using Minimax */
+    private int[] getAIMove() {
+        int bestScore = Integer.MIN_VALUE;
+        int[] bestMove = {-1, -1};
+
+        for (int row = 0; row < Board.ROWS; row++) {
+            for (int col = 0; col < Board.COLS; col++) {
+                if (board.cells[row][col].content == Seed.NO_SEED) { // Check empty cell
+                    board.cells[row][col].content = Seed.NOUGHT;    // Try AI's move
+                    int score = minimax(0, false);                 // Evaluate move
+                    board.cells[row][col].content = Seed.NO_SEED;   // Undo move
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = new int[]{row, col};
+                    }
+                }
+            }
+        }
+        return bestMove;
+    }
+
+    /** Recursive Minimax algorithm to evaluate the board state */
+    private int minimax(int depth, boolean isMaximizing) {
+        if (board.hasWon(Seed.NOUGHT)) return 10 - depth; // AI wins
+        if (board.hasWon(Seed.CROSS)) return depth - 10;  // Human wins
+        if (board.isDraw()) return 0;                    // Draw
+
+        int bestScore = isMaximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+
+        for (int row = 0; row < Board.ROWS; row++) {
+            for (int col = 0; col < Board.COLS; col++) {
+                if (board.cells[row][col].content == Seed.NO_SEED) { // Check empty cell
+                    board.cells[row][col].content = isMaximizing ? Seed.NOUGHT : Seed.CROSS;
+                    int score = minimax(depth + 1, !isMaximizing);
+                    board.cells[row][col].content = Seed.NO_SEED; // Undo move
+
+                    bestScore = isMaximizing
+                            ? Math.max(bestScore, score)
+                            : Math.min(bestScore, score);
+                }
+            }
+        }
+        return bestScore;
     }
 
     /** Custom painting codes on this JPanel */
