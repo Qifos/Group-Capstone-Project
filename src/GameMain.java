@@ -45,25 +45,25 @@ public class GameMain extends JPanel {
                 int col = mouseX / Cell.SIZE;
 
                 if (currentState == State.PLAYING) {
-                    if (currentPlayer == Seed.CROSS) { // Human player's turn
+                    if (currentPlayer == Seed.CROSS) { // player turn
                         if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
                                 && board.cells[row][col].content == Seed.NO_SEED) {
-                            SoundEffect.EAT_FOOD.play(); // Play sound when human makes a move
+                            SoundEffect.EAT_FOOD.play();
                             currentState = board.stepGame(currentPlayer, row, col);
-                            currentPlayer = Seed.NOUGHT; // Switch to AI
+                            currentPlayer = Seed.NOUGHT; // AI turn
                             repaint();
                         }
                     }
 
                     if (currentState == State.PLAYING && currentPlayer == Seed.NOUGHT) { // AI's turn
-                        int[] aiMove = getAIMove(); // Get AI's best move
-                        SoundEffect.EAT_FOOD.play(); // Play sound when AI makes a move
+                        int[] aiMove = getAIMove();
+                        SoundEffect.EAT_FOOD.play();
                         currentState = board.stepGame(currentPlayer, aiMove[0], aiMove[1]);
-                        currentPlayer = Seed.CROSS; // Switch back to human
+                        currentPlayer = Seed.CROSS; // Switch to player
                         repaint();
                     }
                 } else { // game over
-                    SoundEffect.DIE.play(); // Play sound when game ends
+                    SoundEffect.DIE.play();
                     newGame(); // restart the game
                 }
                 // Refresh the drawing canvas
@@ -107,7 +107,7 @@ public class GameMain extends JPanel {
         currentState = State.PLAYING;  // ready to play
     }
 
-    /** Determine the best move for the AI using Minimax */
+    // this method is for the AI, to be honest I don't think the player could ever win against this AI
     private int[] getAIMove() {
         int bestScore = Integer.MIN_VALUE;
         int[] bestMove = {-1, -1};
@@ -129,7 +129,7 @@ public class GameMain extends JPanel {
         return bestMove;
     }
 
-    /** Recursive Minimax algorithm to evaluate the board state */
+    // courtesy to that one guy on StackOverflow for this one
     private int minimax(int depth, boolean isMaximizing) {
         if (board.hasWon(Seed.NOUGHT)) return 10 - depth; // AI wins
         if (board.hasWon(Seed.CROSS)) return depth - 10;  // Human wins

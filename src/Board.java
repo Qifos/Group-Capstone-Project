@@ -96,6 +96,8 @@ public class Board {
         }
     }
 
+    // had to separate hasWon and isDraw method in order for the AI to work
+
     /**
      * Check if the given player has won the game.
      * @param player The player to check (CROSS or NOUGHT).
