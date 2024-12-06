@@ -64,13 +64,17 @@ public class Cell extends JTextField {
             setBackground(BG_TO_GUESS);
             setForeground(FG_NOT_GIVEN);
         } else if (status == CellStatus.CORRECT_GUESS) {
+            setText(Integer.toString(number));
+            setEditable(false);
             setBackground(BG_CORRECT);
+            setForeground(FG_GIVEN);
         } else if (status == CellStatus.WRONG_GUESS) {
             setBackground(BG_WRONG);
         }
         repaint();
         revalidate();
     }
+
 
 
     // Getter for row

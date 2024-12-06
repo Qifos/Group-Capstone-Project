@@ -24,8 +24,8 @@ public class GameBoardPanel extends JPanel {
     public static final int BOARD_HEIGHT = CELL_SIZE * SudokuConstants.GRID_SIZE;
 
     // Properties
-    private Cell[][] cells = new Cell[SudokuConstants.GRID_SIZE][SudokuConstants.GRID_SIZE];
-    private Puzzle puzzle = new Puzzle();
+    Cell[][] cells = new Cell[SudokuConstants.GRID_SIZE][SudokuConstants.GRID_SIZE];
+    Puzzle puzzle = new Puzzle();
 
     // Keep track of the conflicting cells
     private List<Cell> conflictingCells = new ArrayList<>();
@@ -148,15 +148,11 @@ public class GameBoardPanel extends JPanel {
                 if (numberIn == puzzle.numbers[sourceCell.getRow()][sourceCell.getCol()]) {
                     sourceCell.setStatus(CellStatus.CORRECT_GUESS);
                     sourceCell.updateAppearance();
-                    sourceCell.repaint();
-                    sourceCell.revalidate();
                     SoundEffect.CORRECT_GUESS.play();
                     highlightConflictingCells(sourceCell.getRow(), sourceCell.getCol(), numberIn);
                 } else {
                     sourceCell.setStatus(CellStatus.WRONG_GUESS);
                     sourceCell.updateAppearance();
-                    sourceCell.repaint();
-                    sourceCell.revalidate();
                     SoundEffect.WRONG_GUESS.play();
                     highlightConflictingCells(sourceCell.getRow(), sourceCell.getCol(), numberIn);
                 }
@@ -165,7 +161,7 @@ public class GameBoardPanel extends JPanel {
                 if (isSolved()) {
                     JOptionPane.showMessageDialog(GameBoardPanel.this, "Congratulations! You've solved the puzzle!", "Puzzle Solved", JOptionPane.INFORMATION_MESSAGE);
                 }
-            } catch (NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(GameBoardPanel.this, "Invalid input. Please enter a number between 1 and 9.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 sourceCell.setText(""); // Clear the input if invalid
             }
