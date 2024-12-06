@@ -1,64 +1,52 @@
 package Sudoku;
+
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Collections;
-
 import javax.swing.*;
 
 public class GameBoardPanel extends JPanel {
-    private static final long serialVersionUID = 1L;  // to prevent serial warning
+    private static final long serialVersionUID = 1L; // To prevent serial warning
 
-    // Define named constants for UI sizes
-    public static final int CELL_SIZE = 60;   // Cell width/height in pixels
-    public static final int BOARD_WIDTH  = CELL_SIZE * SudokuConstants.GRID_SIZE;
+    // Define UI sizes
+    public static final int CELL_SIZE = 60; // Cell width/height in pixels
+    public static final int BOARD_WIDTH = CELL_SIZE * SudokuConstants.GRID_SIZE;
     public static final int BOARD_HEIGHT = CELL_SIZE * SudokuConstants.GRID_SIZE;
-    // Board width/height in pixels
 
-    // Define properties
-    /** The game board composes of 9x9 Cells (customized JTextFields) */
+    // Properties
     private Cell[][] cells = new Cell[SudokuConstants.GRID_SIZE][SudokuConstants.GRID_SIZE];
-    /** It also contains a Puzzle with array numbers and isGiven */
     private Puzzle puzzle = new Puzzle();
 
-    /** Constructor */
+    // Constructor
     public GameBoardPanel() {
-        super.setLayout(new GridLayout(SudokuConstants.GRID_SIZE, SudokuConstants.GRID_SIZE));  // JPanel
+        setLayout(new GridLayout(SudokuConstants.GRID_SIZE, SudokuConstants.GRID_SIZE));
 
-        // Allocate the 2D array of Cell, and added into JPanel.
+        // Create the grid of cells
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
                 cells[row][col] = new Cell(row, col);
-                super.add(cells[row][col]);   // JPanel
+                add(cells[row][col]);
             }
         }
 
-        // [TODO 3] Allocate a common listener as the ActionEvent listener for all the
-        //  Cells (JTextFields)
-        // [TODO 3]
+        // Add a common listener to all editable cells
         CellInputListener listener = new CellInputListener();
-
-        // [TODO 4] Adds this common listener to all editable cells
-        for (int row = 0; row< SudokuConstants.GRID_SIZE;row++) {
-            for (int col =0;col< SudokuConstants.GRID_SIZE;col++) {
+        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
+            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
                 if (cells[row][col].isEditable()) {
-                    cells[row][col].addActionListener(listener);   // For all editable rows and cols
+                    cells[row][col].addActionListener(listener);
                 }
             }
         }
 
-        super.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
+        setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
     }
 
-    /**
-     * Generate a new puzzle; and reset the game board of cells based on the puzzle.
-     * You can call this method to start a new game.
-     */
-    public void newGame() {
-        // Generate a new puzzle
-        puzzle.newPuzzle(2);
+    // Start a new game
+    public void newGame(int difficultyLevel) {
+        // Generate a new puzzle based on difficulty level (e.g., number of blank cells)
+        puzzle.newPuzzle(difficultyLevel);
 
-        // Initialize all the 9x9 cells, based on the puzzle.
+        // Initialize all the 9x9 cells based on the generated puzzle
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
                 cells[row][col].newGame(puzzle.numbers[row][col], puzzle.isGiven[row][col]);
@@ -66,10 +54,8 @@ public class GameBoardPanel extends JPanel {
         }
     }
 
-    /**
-     * Return true if the puzzle is solved
-     * i.e., none of the cell have status of TO_GUESS or WRONG_GUESS
-     */
+
+    // Check if the puzzle is solved
     public boolean isSolved() {
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
@@ -81,40 +67,27 @@ public class GameBoardPanel extends JPanel {
         return true;
     }
 
-    // [TODO 2] Define a Listener Inner Class for all the editable Cells
+    // Inner class to handle input in editable cells
     private class CellInputListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Get a reference of the JTextField that triggers this action event
-            Cell sourceCell = (Cell)e.getSource();
+            Cell sourceCell = (Cell) e.getSource();
+            try {
+                int numberIn = Integer.parseInt(sourceCell.getText());
+                if (numberIn == sourceCell.number) {
+                    sourceCell.setStatus(CellStatus.CORRECT_GUESS);
+                } else {
+                    sourceCell.setStatus(CellStatus.WRONG_GUESS);
+                }
 
-            // Retrieve the int entered
-            int numberIn = Integer.parseInt(sourceCell.getText());
-            // For debugging
-            System.out.println("You entered " + numberIn);
-
-            /*
-             * [TODO 5] (later - after TODO 3 and 4)
-             * Check the numberIn against sourceCell.number.
-             * Update the cell status sourceCell.status,
-             * and re-paint the cell via sourceCell.paint().
-             */
-            if (numberIn == sourceCell.number) {
-                sourceCell.status = CellStatus.CORRECT_GUESS;
-            } else {
-                sourceCell.status = CellStatus.WRONG_GUESS;
+                // Check for solved puzzle
+                if (isSolved()) {
+                    JOptionPane.showMessageDialog(GameBoardPanel.this, "Congratulations! You've solved the puzzle!", "Puzzle Solved", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(GameBoardPanel.this, "Invalid input. Please enter a number between 1 and 9.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                sourceCell.setText("");
             }
-            sourceCell.paint();   // re-paint this cell based on its status
-
-            /*
-             * [TODO 6] (later)
-             * Check if the player has solved the puzzle after this move,
-             *   by calling isSolved(). Put up a congratulation JOptionPane, if so.
-             */
-            if (isSolved()) {
-                JOptionPane.showMessageDialog(GameBoardPanel.this, "Congratulations! You've solved the puzzle!", "Puzzle Solved", JOptionPane.INFORMATION_MESSAGE);
-            }
-
         }
     }
 }
