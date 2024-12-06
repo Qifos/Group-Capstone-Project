@@ -1,3 +1,12 @@
+/**
+ * ES234317-Algorithm and Data Structures
+ * Semester Ganjil, 2024/2025
+ * Group Capstone Project
+ * Group #12
+ * 1 - 5026231096 - Muhammad Fiqih Soetam Putra
+ * 2 - 5026231164 - Bagus Subekti
+ */
+
 package Sudoku;
 
 import java.awt.Color;
@@ -59,8 +68,8 @@ public class Cell extends JTextField {
         } else if (status == CellStatus.WRONG_GUESS) {
             setBackground(BG_WRONG);
         }
-        repaint();    // Ensure UI updates immediately
-        revalidate(); // Revalidate the cell's layout
+        repaint();
+        revalidate();
     }
 
 

@@ -1,3 +1,12 @@
+/**
+ * ES234317-Algorithm and Data Structures
+ * Semester Ganjil, 2024/2025
+ * Group Capstone Project
+ * Group #12
+ * 1 - 5026231096 - Muhammad Fiqih Soetam Putra
+ * 2 - 5026231164 - Bagus Subekti
+ */
+
 package Sudoku;
 
 import java.awt.*;
@@ -72,21 +81,19 @@ public class GameBoardPanel extends JPanel {
         return true;
     }
 
-    // Helper method to reset background colors
+    // reset background color
     private void resetCellBackgrounds() {
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
-                // Only reset non-blank cells to their original color (keep yellow for non-conflicting guesses)
                 if (puzzle.numbers[row][col] == 0) {
-                    cells[row][col].setBackground(Color.WHITE); // Reset blank cells to white
+                    cells[row][col].setBackground(Color.WHITE);
                 } else if (cells[row][col].status == CellStatus.CORRECT_GUESS) {
-                    cells[row][col].setBackground(Color.GREEN); // Keep correct guesses green
+                    cells[row][col].setBackground(Color.GREEN);
                 }
             }
         }
     }
 
-    // Helper method to highlight cells with a specific color
     private void highlightCellsWithValue(int value, Color color) {
         for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
             for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
@@ -97,12 +104,10 @@ public class GameBoardPanel extends JPanel {
         }
     }
 
-    // Helper method to highlight conflicting cells
+    // highlight conflict cell
     private void highlightConflictingCells(int row, int col, int value) {
-        // Reset previous highlights
         resetCellBackgrounds();
 
-        // Clear previous highlights
         for (Cell highlightedCell : lastHighlightedCells) {
             highlightedCell.setBackground(Color.WHITE); // Reset previous highlighted cells
         }
@@ -110,26 +115,25 @@ public class GameBoardPanel extends JPanel {
 
         boolean hasConflict = false;
 
-        // Check for conflicts in the same row and column only
+        // Check for conflict
         for (int i = 0; i < SudokuConstants.GRID_SIZE; ++i) {
-            if (puzzle.numbers[row][i] == value && i != col && puzzle.isGiven[row][i]) { // Highlight only filled cells with conflict
-                cells[row][i].setBackground(Color.RED); // Highlight conflicting cell in row
-                lastHighlightedCells.add(cells[row][i]); // Add to the conflict list
+            if (puzzle.numbers[row][i] == value && i != col && puzzle.isGiven[row][i]) {
+                cells[row][i].setBackground(Color.RED);
+                lastHighlightedCells.add(cells[row][i]);
                 hasConflict = true;
             }
         }
 
         for (int i = 0; i < SudokuConstants.GRID_SIZE; ++i) {
-            if (puzzle.numbers[i][col] == value && i != row && puzzle.isGiven[i][col]) { // Highlight only filled cells with conflict
-                cells[i][col].setBackground(Color.RED); // Highlight conflicting cell in column
-                lastHighlightedCells.add(cells[i][col]); // Add to the conflict list
+            if (puzzle.numbers[i][col] == value && i != row && puzzle.isGiven[i][col]) {
+                cells[i][col].setBackground(Color.RED);
+                lastHighlightedCells.add(cells[i][col]);
                 hasConflict = true;
             }
         }
 
-        // If no conflict was found, highlight all cells with the same value
         if (!hasConflict) {
-            highlightCellsWithValue(value, Color.YELLOW); // Highlight all cells with the same value
+            highlightCellsWithValue(value, Color.YELLOW);
         }
     }
 
@@ -141,20 +145,20 @@ public class GameBoardPanel extends JPanel {
             Cell sourceCell = (Cell) e.getSource();
             try {
                 int numberIn = Integer.parseInt(sourceCell.getText());
-                if (numberIn == puzzle.numbers[sourceCell.getRow()][sourceCell.getCol()]) { // Check against the value in puzzle
+                if (numberIn == puzzle.numbers[sourceCell.getRow()][sourceCell.getCol()]) {
                     sourceCell.setStatus(CellStatus.CORRECT_GUESS);
-                    sourceCell.updateAppearance(); // Update appearance immediately
-                    sourceCell.repaint(); // Force repaint
-                    sourceCell.revalidate(); // Force revalidate
-                    SoundEffect.CORRECT_GUESS.play(); // Play sound for correct guess
-                    highlightConflictingCells(sourceCell.getRow(), sourceCell.getCol(), numberIn); // Highlight same value and conflicts
+                    sourceCell.updateAppearance();
+                    sourceCell.repaint();
+                    sourceCell.revalidate();
+                    SoundEffect.CORRECT_GUESS.play();
+                    highlightConflictingCells(sourceCell.getRow(), sourceCell.getCol(), numberIn);
                 } else {
                     sourceCell.setStatus(CellStatus.WRONG_GUESS);
-                    sourceCell.updateAppearance(); // Update appearance immediately
-                    sourceCell.repaint(); // Force repaint
-                    sourceCell.revalidate(); // Force revalidate
-                    SoundEffect.WRONG_GUESS.play(); // Play sound for wrong guess
-                    highlightConflictingCells(sourceCell.getRow(), sourceCell.getCol(), numberIn); // Highlight same value and conflicts
+                    sourceCell.updateAppearance();
+                    sourceCell.repaint();
+                    sourceCell.revalidate();
+                    SoundEffect.WRONG_GUESS.play();
+                    highlightConflictingCells(sourceCell.getRow(), sourceCell.getCol(), numberIn);
                 }
 
                 // Check for solved puzzle
