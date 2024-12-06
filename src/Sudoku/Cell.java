@@ -21,7 +21,7 @@ public class Cell extends JTextField {
 
     // Properties of the Cell
     private int row, col;             // Row and column indices of this cell
-    int number;               // The number assigned to this cell
+    int number;                       // The number assigned to this cell
     public CellStatus status;         // The status of this cell (e.g., GIVEN, TO_GUESS)
 
     // Constructor
@@ -59,7 +59,10 @@ public class Cell extends JTextField {
         } else if (status == CellStatus.WRONG_GUESS) {
             setBackground(BG_WRONG);
         }
+        repaint();    // Ensure UI updates immediately
+        revalidate(); // Revalidate the cell's layout
     }
+
 
     // Getter for row
     public int getRow() {

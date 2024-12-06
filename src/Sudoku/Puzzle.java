@@ -2,20 +2,24 @@ package Sudoku;
 
 import java.util.Random;
 
+/**
+ * The Puzzle class manages the Sudoku puzzle grid and handles puzzle generation.
+ */
 public class Puzzle {
-    public static final int GRID_SIZE = 9; // 9x9 Sudoku
+    public static final int GRID_SIZE = 9; // 9x9 Sudoku grid
     public int[][] numbers; // Complete solution
     public boolean[][] isGiven; // Indicates whether a cell is a given number
     private Random random = new Random();
 
+    // Constructor
     public Puzzle() {
         numbers = new int[GRID_SIZE][GRID_SIZE];
         isGiven = new boolean[GRID_SIZE][GRID_SIZE];
         generateSolution();
     }
 
+    // Generate a complete and valid Sudoku solution
     private void generateSolution() {
-        // Generate a complete and valid Sudoku solution
         // For simplicity, we use a predefined solution template
         int[][] baseSolution = {
                 {5, 3, 4, 6, 7, 8, 9, 1, 2},
@@ -35,6 +39,7 @@ public class Puzzle {
         }
     }
 
+    // Generate a new puzzle by removing numbers to create blanks
     public void newPuzzle(int blanks) {
         // Reset the puzzle
         for (int row = 0; row < GRID_SIZE; row++) {
