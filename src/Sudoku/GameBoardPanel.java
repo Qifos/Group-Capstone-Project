@@ -94,16 +94,6 @@ public class GameBoardPanel extends JPanel {
         }
     }
 
-    private void highlightCellsWithValue(int value, Color color) {
-        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
-            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
-                if (puzzle.numbers[row][col] == value && puzzle.isGiven[row][col] != true) { // Exclude given numbers
-                    cells[row][col].setBackground(color); // Highlight cells with the guessed value
-                }
-            }
-        }
-    }
-
     // highlight conflict cell
     private void highlightConflictingCells(int row, int col, int value) {
         resetCellBackgrounds();
@@ -130,10 +120,6 @@ public class GameBoardPanel extends JPanel {
                 lastHighlightedCells.add(cells[i][col]);
                 hasConflict = true;
             }
-        }
-
-        if (!hasConflict) {
-            highlightCellsWithValue(value, Color.YELLOW);
         }
     }
 
