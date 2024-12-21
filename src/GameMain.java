@@ -186,6 +186,7 @@ public class GameMain extends JPanel {
         return bestMove;
     }
 
+
     // Helper method to count discs
     private int countDiscs(Seed player) {
         int count = 0;

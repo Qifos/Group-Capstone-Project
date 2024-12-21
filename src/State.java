@@ -13,3 +13,4 @@
 public enum State {
     PLAYING, DRAW, BLACK_WON, WHITE_WON
 }
+
