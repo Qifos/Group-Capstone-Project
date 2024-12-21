@@ -59,7 +59,7 @@ public class GameMain extends JPanel {
                         currentPlayer = (currentPlayer == Seed.BLACK) ? Seed.WHITE : Seed.BLACK;
 
                         // Handle AI move if playing against AI
-                        if (playAgainstAI && currentState == State.PLAYING) {
+                        if (playAgainstAI && currentState == State.PLAYING && currentPlayer == Seed.WHITE) {
                             int[] aiMove = getAIMove();
                             if (aiMove[0] != -1 && aiMove[1] != -1) {
                                 SoundEffect.EAT_FOOD.play();
@@ -166,15 +166,12 @@ public class GameMain extends JPanel {
             for (int col = 0; col < Board.COLS; col++) {
                 if (board.isValidMove(currentPlayer, row, col)) {
                     // Simulate the move
-                    board.cells[row][col].content = currentPlayer;
-                    board.flipDiscs(currentPlayer, row, col);
+                    Board simulatedBoard = copyBoard(board);
+                    simulatedBoard.cells[row][col].content = currentPlayer;
+                    simulatedBoard.flipDiscs(currentPlayer, row, col);
 
                     // Evaluate the move (simple heuristic: count of discs)
-                    int score = countDiscs(currentPlayer);
-
-                    // Undo the move
-                    board.cells[row][col].content = Seed.NO_SEED;
-                    // Restore previous state (you might need a more sophisticated method)
+                    int score = countDiscsOnBoard(simulatedBoard, currentPlayer);
 
                     if (score > bestScore) {
                         bestScore = score;
@@ -187,8 +184,19 @@ public class GameMain extends JPanel {
     }
 
 
-    // Helper method to count discs
-    private int countDiscs(Seed player) {
+    // Helper method to create a deep copy of the board
+    private Board copyBoard(Board originalBoard) {
+        Board newBoard = new Board();
+        for (int row = 0; row < Board.ROWS; row++) {
+            for (int col = 0; col < Board.COLS; col++) {
+                newBoard.cells[row][col].content = originalBoard.cells[row][col].content;
+            }
+        }
+        return newBoard;
+    }
+
+    // Helper method to count discs on a specific board
+    private int countDiscsOnBoard(Board board, Seed player) {
         int count = 0;
         for (int row = 0; row < Board.ROWS; row++) {
             for (int col = 0; col < Board.COLS; col++) {
@@ -199,6 +207,7 @@ public class GameMain extends JPanel {
         }
         return count;
     }
+
 
     /**
      * The entry "main" method
