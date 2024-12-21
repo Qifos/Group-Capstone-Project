@@ -25,15 +25,21 @@ public class Board {
     public static final int Y_OFFSET = 1;  // Fine tune for better display
 
     // Define properties (package-visible)
-    /** Composes of 2D array of ROWS-by-COLS Cell instances */
+    /**
+     * Composes of 2D array of ROWS-by-COLS Cell instances
+     */
     Cell[][] cells;
 
-    /** Constructor to initialize the game board */
+    /**
+     * Constructor to initialize the game board
+     */
     public Board() {
         initGame();
     }
 
-    /** Initialize the game objects (run once) */
+    /**
+     * Initialize the game objects (run once)
+     */
     public void initGame() {
         cells = new Cell[ROWS][COLS]; // allocate the array
         for (int row = 0; row < ROWS; ++row) {
@@ -45,7 +51,9 @@ public class Board {
         }
     }
 
-    /** Reset the game board, ready for new game */
+    /**
+     * Reset the game board, ready for new game
+     */
     public void newGame() {
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
@@ -55,9 +63,9 @@ public class Board {
     }
 
     /**
-     *  The given player makes a move on (selectedRow, selectedCol).
-     *  Update cells[selectedRow][selectedCol]. Compute and return the
-     *  new game state (PLAYING, DRAW, CROSS_WON, NOUGHT_WON).
+     * The given player makes a move on (selectedRow, selectedCol).
+     * Update cells[selectedRow][selectedCol]. Compute and return the
+     * new game state (PLAYING, DRAW, CROSS_WON, NOUGHT_WON).
      */
     public State stepGame(Seed player, int selectedRow, int selectedCol) {
         // Update game board
@@ -73,7 +81,9 @@ public class Board {
         }
     }
 
-    /** Paint itself on the graphics canvas, given the Graphics context */
+    /**
+     * Paint itself on the graphics canvas, given the Graphics context
+     */
     public void paint(Graphics g) {
         // Draw the grid-lines
         g.setColor(COLOR_GRID);
@@ -100,6 +110,7 @@ public class Board {
 
     /**
      * Check if the given player has won the game.
+     *
      * @param player The player to check (CROSS or NOUGHT).
      * @return true if the player has won, otherwise false.
      */
@@ -122,6 +133,7 @@ public class Board {
 
     /**
      * Check if the game is a draw (no empty cells and no winner).
+     *
      * @return true if the game is a draw, otherwise false.
      */
     public boolean isDraw() {

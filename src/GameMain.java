@@ -10,6 +10,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
 /**
  * Tic-Tac-Toe: Two-player Graphic version with better OO design.
  * The Board and Cell classes are separated in their own classes.
@@ -33,7 +34,9 @@ public class GameMain extends JPanel {
     private JLabel statusBar;    // for displaying status message
     private boolean playAgainstAI = false;
 
-    /** Constructor to setup the UI and game components */
+    /**
+     * Constructor to setup the UI and game components
+     */
     public GameMain() {
 
         // This JPanel fires MouseEvent
@@ -46,47 +49,47 @@ public class GameMain extends JPanel {
                 int col = mouseX / Cell.SIZE;
 
                 if (currentState == State.PLAYING) {
-                    if (currentPlayer == Seed.CROSS) { // Player X's turn
+                    if (currentPlayer == Seed.CROSS) {
                         if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
                                 && board.cells[row][col].content == Seed.NO_SEED) {
                             SoundEffect.EAT_FOOD.play();
                             currentState = board.stepGame(currentPlayer, row, col);
 
                             if (currentState == State.PLAYING) {
-                                currentPlayer = playAgainstAI ? Seed.NOUGHT : Seed.NOUGHT; // Switch to AI or Player O
+                                currentPlayer = playAgainstAI ? Seed.NOUGHT : Seed.NOUGHT;
                             }
                             repaint();
                         }
                     }
 
-                    if (playAgainstAI && currentState == State.PLAYING && currentPlayer == Seed.NOUGHT) { // AI's turn
-                        int[] aiMove = getAIMove(); // Get AI's move as [row, col]
-                        if (aiMove[0] != -1 && aiMove[1] != -1) { // Ensure move is valid
+                    if (playAgainstAI && currentState == State.PLAYING && currentPlayer == Seed.NOUGHT) {
+                        int[] aiMove = getAIMove();
+                        if (aiMove[0] != -1 && aiMove[1] != -1) {
                             SoundEffect.EAT_FOOD.play();
                             currentState = board.stepGame(currentPlayer, aiMove[0], aiMove[1]);
                             if (currentState == State.PLAYING) {
-                                currentPlayer = Seed.CROSS; // Switch back to Player X
+                                currentPlayer = Seed.CROSS;
                             }
                             repaint();
                         }
                     }
 
-                    if (!playAgainstAI && currentState == State.PLAYING && currentPlayer == Seed.NOUGHT) { // Player O's turn
+                    if (!playAgainstAI && currentState == State.PLAYING && currentPlayer == Seed.NOUGHT) {
                         if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
                                 && board.cells[row][col].content == Seed.NO_SEED) {
                             SoundEffect.EAT_FOOD.play();
                             currentState = board.stepGame(currentPlayer, row, col);
                             if (currentState == State.PLAYING) {
-                                currentPlayer = Seed.CROSS; // Switch back to Player X
+                                currentPlayer = Seed.CROSS;
                             }
                             repaint();
                         }
                     }
-                } else { // Game over
+                } else {
                     SoundEffect.DIE.play();
-                    showMainMenu(); // Return to main menu
+                    showMainMenu();
                 }
-                repaint(); // Refresh the drawing canvas
+                repaint();
             }
         });
 
@@ -130,19 +133,23 @@ public class GameMain extends JPanel {
     }
 
 
-/** Reset the game-board contents and the current-state, ready for new game */
-public void newGame() {
-    for (int row = 0; row < Board.ROWS; ++row) {
-        for (int col = 0; col < Board.COLS; ++col) {
-            board.cells[row][col].content = Seed.NO_SEED;
+    /**
+     * Reset the game-board contents and the current-state, ready for new game
+     */
+    public void newGame() {
+        for (int row = 0; row < Board.ROWS; ++row) {
+            for (int col = 0; col < Board.COLS; ++col) {
+                board.cells[row][col].content = Seed.NO_SEED;
+            }
         }
+        currentPlayer = Seed.CROSS;
+        currentState = State.PLAYING;
+        repaint();
     }
-    currentPlayer = Seed.CROSS;
-    currentState = State.PLAYING;
-    repaint();
-}
 
-    /** Custom painting codes on this JPanel */
+    /**
+     * Custom painting codes on this JPanel
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -164,67 +171,69 @@ public void newGame() {
         }
     }
 
-// this method is for the AI
-private int[] getAIMove() {
-    int bestScore = Integer.MIN_VALUE;
-    int[] bestMove = {-1, -1};
+    // this method is for the AI
+    private int[] getAIMove() {
+        int bestScore = Integer.MIN_VALUE;
+        int[] bestMove = {-1, -1};
 
-    for (int row = 0; row < Board.ROWS; row++) {
-        for (int col = 0; col < Board.COLS; col++) {
-            if (board.cells[row][col].content == Seed.NO_SEED) { // Check empty cell
-                board.cells[row][col].content = Seed.NOUGHT;    // Try AI's move
-                int score = minimax(0, false);                 // Evaluate move
-                board.cells[row][col].content = Seed.NO_SEED;   // Undo move
+        for (int row = 0; row < Board.ROWS; row++) {
+            for (int col = 0; col < Board.COLS; col++) {
+                if (board.cells[row][col].content == Seed.NO_SEED) {
+                    board.cells[row][col].content = Seed.NOUGHT;
+                    int score = minimax(0, false);
+                    board.cells[row][col].content = Seed.NO_SEED;
 
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = new int[]{row, col};
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = new int[]{row, col};
+                    }
                 }
             }
         }
+        return bestMove;
     }
-    return bestMove;
-}
 
-// courtesy to that one guy on StackOverflow for this one
-private int minimax(int depth, boolean isMaximizing) {
-    if (board.hasWon(Seed.NOUGHT)) return 10 - depth; // AI wins
-    if (board.hasWon(Seed.CROSS)) return depth - 10;  // Human wins
-    if (board.isDraw()) return 0;                    // Draw
+    // MinMax
+    private int minimax(int depth, boolean isMaximizing) {
+        if (board.hasWon(Seed.NOUGHT)) return 10 - depth;
+        if (board.hasWon(Seed.CROSS)) return depth - 10;
+        if (board.isDraw()) return 0;
 
-    int bestScore = isMaximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        int bestScore = isMaximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 
-    for (int row = 0; row < Board.ROWS; row++) {
-        for (int col = 0; col < Board.COLS; col++) {
-            if (board.cells[row][col].content == Seed.NO_SEED) { // Check empty cell
-                board.cells[row][col].content = isMaximizing ? Seed.NOUGHT : Seed.CROSS;
-                int score = minimax(depth + 1, !isMaximizing);
-                board.cells[row][col].content = Seed.NO_SEED; // Undo move
+        for (int row = 0; row < Board.ROWS; row++) {
+            for (int col = 0; col < Board.COLS; col++) {
+                if (board.cells[row][col].content == Seed.NO_SEED) {
+                    board.cells[row][col].content = isMaximizing ? Seed.NOUGHT : Seed.CROSS;
+                    int score = minimax(depth + 1, !isMaximizing);
+                    board.cells[row][col].content = Seed.NO_SEED;
 
-                bestScore = isMaximizing
-                        ? Math.max(bestScore, score)
-                        : Math.min(bestScore, score);
+                    bestScore = isMaximizing
+                            ? Math.max(bestScore, score)
+                            : Math.min(bestScore, score);
+                }
             }
         }
+        return bestScore;
     }
-    return bestScore;
-}
 
-/** The entry "main" method */
-public static void main(String[] args) {
-    // Run GUI construction codes in Event-Dispatching thread for thread safety
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
-            JFrame frame = new JFrame(TITLE);
-            // Set the content-pane of the JFrame to an instance of main JPanel
-            frame.setContentPane(new GameMain());
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setLocationRelativeTo(null); // center the application window
-            frame.setVisible(true);            // show it
-        }
-    });
-}
+    /**
+     * The entry "main" method
+     */
+    public static void main(String[] args) {
+        // Run GUI construction codes in Event-Dispatching thread for thread safety
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                JFrame frame = new JFrame(TITLE);
+                // Set the content-pane of the JFrame to an instance of main JPanel
+                frame.setContentPane(new GameMain());
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.pack();
+                frame.setLocationRelativeTo(null); // center the application window
+                frame.setVisible(true);            // show it
+            }
+        });
+    }
 
 }
 
